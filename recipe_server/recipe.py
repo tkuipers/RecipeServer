@@ -1,22 +1,35 @@
 from enum import unique
-import json
-from pydantic import BaseModel
-import recipe_scrapers
-from sqlalchemy import Column, Integer, PickleType, String
+from tokenize import Double
+from pydantic import BaseModel, Field
+from sqlalchemy import Column, Float, Integer, PickleType, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.mutable import MutableList
-from dataclasses import dataclass, field
-@dataclass()
-class RecipeDto:
-    id: int = None
-    url: str = None
-    title: str = None
-    total_time: str = None
-    image_url: str = None
-    host: str = None
-    yields: str = None
-    ingredients_list: list[str] = field(default_factory=list)
-    instructions_list: list[str] = field(default_factory=list)
+
+class RecipeDto(BaseModel):
+    id: int 
+    url: str
+    title: str
+    total_time: str
+    image_url: str
+    host: str
+    yields: str
+    notes: str
+    rating: float
+    ingredients_list: list[str] = Field(default_factory=list)
+    instructions_list: list[str] = Field(default_factory=list)
+
+    # def __init__(self, id, url, title, total_time, image_url, host, yields, notes, rating, ingredients_list, instructions_list):
+    #     self.id = id
+    #     self.url = url
+    #     self.title = title
+    #     self.total_time = total_time
+    #     self.image_url = image_url
+    #     self.host = host
+    #     self.yields = yields
+    #     self.notes = notes
+    #     self.rating = rating
+    #     self.ingredients_list = ingredients_list
+    #     self.instructions_list = instructions_list
 
 Base = declarative_base()
 class Recipe(Base, object):
@@ -29,13 +42,14 @@ class Recipe(Base, object):
     host = Column(String(1000))
     yields = Column(String(1000))
     notes = Column(String(5000))
+    rating = Column(Float)
     ingredients_list = Column(MutableList.as_mutable(PickleType))
     instructions_list = Column(MutableList.as_mutable(PickleType))
     
 
     def to_dto(self) -> RecipeDto:
-        return RecipeDto(self.id, self.url, self.title, self.total_time, self.image_url, 
-            self.host, self.yields, self.notes, self.ingredients_list, self.instructions_list) 
+        return RecipeDto(id=self.id, url=self.url, title=self.title, total_time=self.total_time, image_url=self.image_url, 
+            host=self.host, yields=self.yields, notes=self.notes, rating=self.rating, ingredients_list=self.ingredients_list, instructions_list=self.instructions_list) 
         
     def update(self, inc):
         self.id = inc.id
@@ -53,6 +67,8 @@ class Recipe(Base, object):
             self.yields = inc.yields
         if inc.notes is not None:
             self.notes = inc.notes
+        if inc.rating is not None:
+            self.rating = inc.rating;
         if inc.ingredients_list is not None and len(inc.ingredients_list) is not 0:
             self.ingredients_list = inc.ingredients_list
         if inc.instructions_list is not None and len(inc.instructions_list) is not 0:
@@ -69,6 +85,7 @@ class Recipe(Base, object):
         out.host = dto.host
         out.yields = dto.yields
         out.notes = dto.notes
+        out.rating = dto.rating;
         out.ingredients_list = dto.ingredients_list
         out.instructions_list = dto.instructions_list
         return out

@@ -17,6 +17,8 @@ mysqlclient = "2.1.0"
 fastapi-utils = "^0.2.1"
 psycopg2-binary = "^2.9.4"
 orjson = "^3.8.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
 
 [build-system]
