@@ -18,9 +18,8 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 
 app = FastAPI()
-dbConfig = {'sqlalchemy.url':'postgresql://admin:water123@localhost:5432/recipes', 'sqlalchemy.echo':'True'}
+dbConfig = {'sqlalchemy.url':os.environ['SQL_CONNECTION_STRING'], 'sqlalchemy.echo':'True'}
 engine = sqlalchemy.engine_from_config(dbConfig)
-# Base.metadata.drop_all(engine)
 if not sqlalchemy.inspect(engine).has_table("recipe"):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -30,7 +29,7 @@ database = sessionmaker(bind=engine)()
 
 # to get a string like this run:
 # openssl rand -hex 32
-SECRET_KEY = os.environ['API_KEY'] or "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+SECRET_KEY = os.environ['API_KEY']
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -40,7 +39,7 @@ fake_users_db = {
         "username": "tk",
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "hashed_password": os.getenv('HASHED_PASSWORD') or "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+        "hashed_password": os.environ['HASHED_PASSWORD'],
         "disabled": False,
     }
 }
@@ -85,8 +84,6 @@ def get_user(db, username: str):
 
 
 def authenticate_user(fake_db, username: str, password: str):
-    print(username)
-    print(password)
     user = get_user(fake_db, username)
     if not user:
         return False
