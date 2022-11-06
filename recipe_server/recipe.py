@@ -1,6 +1,7 @@
 from enum import unique
 from tokenize import Double
 from pydantic import BaseModel, Field
+from pydantic.schema import Optional
 from sqlalchemy import Column, Float, Integer, PickleType, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.mutable import MutableList
@@ -9,14 +10,14 @@ class RecipeDto(BaseModel):
     id: int 
     url: str
     title: str
-    total_time: str
-    image_url: str
-    host: str
-    yields: str
-    notes: str
-    rating: float
-    ingredients_list: list[str] = Field(default_factory=list)
-    instructions_list: list[str] = Field(default_factory=list)
+    total_time: Optional[str]
+    image_url: Optional[str]
+    host: Optional[str]
+    yields: Optional[str]
+    notes: Optional[str]
+    rating: Optional[str]
+    ingredients_list: Optional[list[str]] = Field(default_factory=list)
+    instructions_list: Optional[list[str]] = Field(default_factory=list)
 
     # def __init__(self, id, url, title, total_time, image_url, host, yields, notes, rating, ingredients_list, instructions_list):
     #     self.id = id
