@@ -180,6 +180,8 @@ async def add_recipe(recipe_url: RecipeUrl, current_user: User = Depends(get_cur
         recipe.rating = 0
         recipe.ingredients_list = scraper.ingredients()
         recipe.instructions_list = scraper.instructions_list()
+        if not recipe.ingredients_list or not recipe.instructions_list:
+            database.delete(recipe)
         database.flush()
         return f'/recipes/{recipe.id}'
     else:
