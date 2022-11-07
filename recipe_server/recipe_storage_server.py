@@ -172,14 +172,14 @@ async def add_recipe(recipe_url: RecipeUrl, current_user: User = Depends(get_cur
         scraper = scrape_me(recipe_url.recipe_url, wild_mode=True)
         recipe.url = recipe_url.recipe_url
         recipe.title = scraper.title()
-        recipe.total_time = scraper.total_time()
-        recipe.image_url = scraper.image()
-        recipe.host = scraper.host()
-        recipe.yields = scraper.yields()
-        recipe.notes = ""
-        recipe.rating = 0
         recipe.ingredients_list = scraper.ingredients()
         recipe.instructions_list = scraper.instructions_list()
+        recipe.notes = ""
+        recipe.rating = 0
+        recipe.host = scraper.host()
+        recipe.image_url = scraper.image()
+        recipe.yields = scraper.yields()
+        recipe.total_time = scraper.total_time()
         if not recipe.ingredients_list or not recipe.instructions_list:
             database.delete(recipe)
         database.flush()
